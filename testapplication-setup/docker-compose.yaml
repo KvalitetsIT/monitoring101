@@ -1,0 +1,97 @@
+services:
+  frontend:
+    image: nginx:1.27
+    healthcheck:
+       test: "curl --fail http://localhost:8080/stub_status || exit 1"
+       interval: 3s
+       timeout: 60s
+       start_period: 3s
+    depends_on:
+      java-app-b:
+         condition: service_healthy
+    networks:
+      - monitoring101
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx:/etc/nginx/templates
+    environment:
+     - NGINX_HOST=frontend
+     - NGINX_PORT=8080
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.3
+    depends_on:
+      frontend:
+         condition: service_healthy
+    networks:
+      - monitoring101
+    ports:
+      - 9113:9113
+    environment:
+      - nginx.scrape-uri=http://frontend:8080/stub_status
+  java-app-a:
+    image: kvalitetsit/kithugs:dev
+    healthcheck:
+       test: "curl --fail http://localhost:8081/actuator/prometheus || exit 1"
+       interval: 5s
+       timeout: 60s
+       start_period: 5s
+    networks:
+      - monitoring101
+    depends_on:
+      mariadb:
+         condition: service_healthy
+    ports:
+      - 8081:8081
+    environment:
+      - JDBC_URL=jdbc:mariadb://mariadb:3306/hellodb
+      - JDBC_USER=dbuser
+      - JDBC_PASS=1234
+      - management_metrics_web_server_request_autotime_percentiles=0.95
+  java-app-b:
+    image: kvalitetsit/kithugs:dev
+    healthcheck:
+       test: "curl --fail http://localhost:8081/actuator/prometheus || exit 1"
+       interval: 5s
+       timeout: 60s
+       start_period: 5s
+    networks:
+      - monitoring101
+    depends_on:
+      java-app-a:
+         condition: service_healthy
+    ports:
+      - 9081:8081
+    environment:
+      - JDBC_URL=jdbc:mariadb://mariadb:3306/hellodb
+      - JDBC_USER=dbuser
+      - JDBC_PASS=1234
+      - management_metrics_web_server_request_autotime_percentiles=0.95
+#  dotnet-app:
+#    image: kvalitetsit/kitnugs:dev
+#    networks:
+#      - monitoring101
+#    ports:
+#      - 8090:8080
+#      - 8091:8081
+#    environment:
+#      - "ConnectionStrings__db=server=mariadb;user=dbuser;password=1234;database=hellodb"
+#      - TEST_VAR=monitoring101
+  mariadb:
+    image: mariadb:10.6
+    healthcheck:
+       test: "/usr/bin/mysql --user=dbuser --password=1234 --execute \"SHOW DATABASES;\""
+       interval: 2s
+       timeout: 60s
+       start_period: 2s
+    environment:
+      - MARIADB_ROOT_PASSWORD=rootroot
+      - MARIADB_DATABASE=hellodb
+      - MARIADB_USER=dbuser
+      - MARIADB_PASSWORD=1234
+    networks:
+      - monitoring101
+networks:
+  # To create this run: docker network create monitoring101
+  monitoring101:
+    external: true
