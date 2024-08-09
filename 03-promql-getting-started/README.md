@@ -10,8 +10,8 @@ The format scraped by Prometheus is documented here: https://prometheus.io/docs/
 
 Basically each metric consists of:
 * A name: What is measured?
-* A number of labels: Classification of what is measured
-* The actual metric
+* A number of labels: Unique identification of what is measured in terms of key-value pairs associated with the time series.
+* The actual metric: A number
 
 For example: A metric showing how many bytes are currently allocated in non-heap storage in our KitHugs application.
 ```
