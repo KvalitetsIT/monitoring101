@@ -11,6 +11,8 @@ The format scraped by Prometheus is documented here: https://prometheus.io/docs/
 Basically each metric consists of:
 * A name: What is measured?
 * A number of labels: Unique identification of what is measured in terms of key-value pairs associated with the time series.
+  * Instrumentation labels: Labels known within you application
+  * Target labels: Related to architecture and deployment
 * The actual metric: A number
 
 For example: A metric showing how many bytes are currently allocated in non-heap storage in our KitHugs application.
@@ -34,4 +36,4 @@ Key points when defining metrics:
 After Prometheus scrapes the various targets, the results will be stored in the Prometheus time series database. In order to query the metrics we will use the [Expression browser in the Prometheus UI](http://localhost:9090).
 
 Try and query for jvm_memory_used_bytes.
-You should get a result with a number of metrics matching the prometheus endpoint output for the java-app-a and java-app-b. Notice how Prometheus has added labels for job and instance.
+You should get a result with a number of metrics matching the prometheus endpoint output for the java-app-a and java-app-b. Notice how Prometheus has added target labels for job and instance.
