@@ -26,3 +26,6 @@ Key points when defining metrics:
 
 ## How Can We Query Metrics in Prometheus?
 After Prometheus scrapes the various targets, the results will be stored in the Prometheus time series database. In order to query the metrics we will use the [Expression browser in the Prometheus UI](http://localhost:9090).
+
+Try and query for jvm_memory_used_bytes.
+You should get a result with a number of metrics matching the prometheus endpoint output for the java-app-a and java-app-b. Notice how Prometheus has added labels for job and instance.
