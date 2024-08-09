@@ -20,7 +20,7 @@ For example: A metric showing how many bytes are currently allocated in non-heap
 jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.9377264E7
 ```
 
-There are (different kinds of metrics)[https://prometheus.io/docs/concepts/metric_types/].
+There are [different kinds of metrics](https://prometheus.io/docs/concepts/metric_types/).
 
 The example above is a gauge metric. This can be concluded from the metadata in the Prometheus output (see the #TYPE annotation). Notice the instrumentation labels describing the memory area and id.
 
@@ -47,7 +47,7 @@ jvm_memory_used_bytes{area="nonheap", id="miscellaneous non-heap storage", insta
 Notice how Prometheus has added target labels for job and instance.
 
 ## Aggregation on Labels
-As you can see there are individual metrics for heap and nonheap memory as well as the two instances currently scraped. If we instead want to the total memory consumption for "heap" and "nonheap" we can use the sum (aggregation operator)[https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators] with the 'without' clause naming the labels we want to ignore:
+As you can see there are individual metrics for heap and nonheap memory as well as the two instances currently scraped. If we instead want to the total memory consumption for "heap" and "nonheap" we can use the sum [aggregation operator](https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators) with the 'without' clause naming the labels we want to ignore:
 
 Try to evaluate: sum without (instance, id) (jvm_memory_used_bytes)
 
