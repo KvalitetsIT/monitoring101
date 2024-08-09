@@ -19,7 +19,7 @@ jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.664
 
 Key points:
 * Use snakecase for metric names and include the unit (at the end)
-* Always use 'baseunits' such as bytes - you can convert to other units in you dashboards later on
+* Always use 'baseunits' such as bytes, seconds - you can convert to other units in you dashboards later on
 *
 *
 
