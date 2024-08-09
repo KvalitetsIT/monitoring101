@@ -28,3 +28,4 @@ up{instance="localhost:9090", job="prometheus"} 1
 up{instance="dotnet-app:8081", job="dotnet-app"} 0
 up{instance="grafana:3000", job="grafana"} 1
 ```
+Prometheus metrics have been enabled int the two applications KitHugs and KitNugs by including a standard Prometheus client library. Many programming languages comes with Prometheus libraries which will make your service 'Prometheus Ready' quite easily. Most of the metrics we will look at here are default metrics that the various libraries in the application exposes as default. It is of course also possible to define you own metrics. An example of this will be shown in a later chapter.
