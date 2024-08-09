@@ -11,8 +11,8 @@ The format scraped by Prometheus is documented here: https://prometheus.io/docs/
 Basically each metric consists of:
 * A name: What is measured?
 * A number of labels: Unique identification of what is measured in terms of key-value pairs associated with the time series.
-  * Instrumentation labels: Labels known within you application
-  * Target labels: Related to architecture and deployment
+  * Instrumentation labels: Labels known within you application (for example: The path of a timed HTTP request)
+  * Target labels: Related to architecture and deployment (for example: The id of the Kubernetes worker currently running the service scraped) 
 * The actual metric: A number
 
 For example: A metric showing how many bytes are currently allocated in non-heap storage in our KitHugs application.
