@@ -16,10 +16,11 @@ As many applications will run in multiple instances in a production setup we hav
 The setup can be started using 'docker compose up'. There are dependencies and healthchecks in place so that most problems regarding start up order and so on should be avoided.
 
 When the containers have started and are healthy you can execute the following PromQL: up which should give 
-
+```
 up{instance="nginx-exporter:9113", job="nginx"} 1
 up{instance="java-app-b:8081", job="java-app"} 1
 up{instance="java-app-a:8081", job="java-app"} 1
 up{instance="localhost:9090", job="prometheus"} 1
 up{instance="dotnet-app:8081", job="dotnet-app"} 0
 up{instance="grafana:3000", job="grafana"} 1
+```
