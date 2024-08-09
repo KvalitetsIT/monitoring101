@@ -59,3 +59,8 @@ Try to evaluate: sum by (area, job) (jvm_memory_used_bytes)
 Question: What happens if a label (either target or instrumentation labels) is added? How will it affect the output in the two cases above?
 
 Answer: The 'by' removes labels that it does not know about whereas 'without' does not. In that sense 'without' is probably "safer" unless you know exactly what you are looking for (for example in the case of "Info" todo link).
+
+
+## Info Labels
+
+sum by (job, version) (up * on (instance, job) group_left(version) application_information)
