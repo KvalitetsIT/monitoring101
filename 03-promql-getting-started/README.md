@@ -47,7 +47,7 @@ jvm_memory_used_bytes{area="nonheap", id="miscellaneous non-heap storage", insta
 Notice how Prometheus has added target labels for job and instance.
 
 ## Aggregation on Labels
-As you can see there are individual metrics for heap and nonheap memory as well as the two instances currently scraped. If we instead want to the total memory consumption for "heap" and "nonheap" we can use the sum aggregator with the 'without' clause naming the labels we want to ignore:
+As you can see there are individual metrics for heap and nonheap memory as well as the two instances currently scraped. If we instead want to the total memory consumption for "heap" and "nonheap" we can use the sum (aggregation operator)[https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators] with the 'without' clause naming the labels we want to ignore:
 
 Try to evaluate: sum without (instance, id) (jvm_memory_used_bytes)
 
