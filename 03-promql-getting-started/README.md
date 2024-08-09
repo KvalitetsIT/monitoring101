@@ -51,4 +51,8 @@ As you can see there are individual metrics for heap and nonheap memory as well 
 
 Try to evaluate: sum without (instance, id) (jvm_memory_used_bytes)
 
+Alternatively, we can specify the labels to keep:
 
+Try to evaluate: sum by (area, job) (jvm_memory_used_bytes)
+
+Question: What happens if a label (either target or instrumentation labels) is added? How will it affect the output in the two cases above?
