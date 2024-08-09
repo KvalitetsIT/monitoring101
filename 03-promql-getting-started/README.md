@@ -17,7 +17,7 @@ Basically each metric consists of:
 
 For example: A metric showing how many bytes are currently allocated in non-heap storage in our KitHugs application.
 ```
-jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.6649136E7
+jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.9377264E7
 ```
 
 There are (different kinds of metrics)[https://prometheus.io/docs/concepts/metric_types/].
@@ -40,7 +40,7 @@ You should get a result with a number of metrics matching the prometheus endpoin
 
 ```
 ...
-jvm_memory_used_bytes{area="nonheap", id="miscellaneous non-heap storage", instance="java-app-a:8081", job="java-app"} 16826272
+jvm_memory_used_bytes{area="nonheap", id="miscellaneous non-heap storage", instance="java-app-b:8081", job="java-app"} 19377264
 ...
 ```
 
