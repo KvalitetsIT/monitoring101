@@ -22,7 +22,7 @@ jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.664
 
 There are (different kinds of metrics)[https://prometheus.io/docs/concepts/metric_types/].
 
-The example above is a gauge metric. This can be concluded from the metadata in the Prometheus output (see the #TYPE annotation).
+The example above is a gauge metric. This can be concluded from the metadata in the Prometheus output (see the #TYPE annotation). Notice the instrumentation labels describing the memory area and id.
 
 A gauge metric can increase and decrease.
 
