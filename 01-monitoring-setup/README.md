@@ -26,13 +26,13 @@ TODO : explain up
 
 
 You should get an output similar to this:
-
+´´´
 up{instance="nginx-exporter:9113", job="nginx"} 0
 up{instance="java-app-b:8081", job="java-app"} 0
 up{instance="java-app-a:8081", job="java-app"} 0
 up{instance="localhost:9090", job="prometheus"} 1
 up{instance="dotnet-app:8081", job="dotnet-app"} 0
 up{instance="grafana:3000", job="grafana"} 1
-
+´´´
 This means that only Prometheus and Grafana was scraped succesfully which is what we expect at this point.
 
