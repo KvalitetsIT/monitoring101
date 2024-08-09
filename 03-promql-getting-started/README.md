@@ -5,6 +5,7 @@ You can see the data collected by Prometheus by accessing the following URLs:
 * java-app-b: http://localhost:9081/actuator/prometheus
 If you look at the Promethus configuration file you can see that both of these URLs are scraped by Prometheus as a part of the 'java-app' scrape job.
 
+## What Metrics Do We Have and How Do They Look?
 The format scraped by Prometheus is documented here: https://prometheus.io/docs/concepts/data_model/
 
 Basically each metric consists of:
@@ -17,9 +18,11 @@ For example: A metric showing how many bytes are currently allocated in non-heap
 jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.6649136E7
 ```
 
-Key points:
+Key points when defining metrics:
 * Use snakecase for metric names and include the unit (at the end)
 * Always use 'baseunits' such as bytes, seconds - you can convert to other units in you dashboards later on
 *
 *
 
+## How Can We Query Metrics in Prometheus?
+After Prometheus scrapes the various targets, the results will be stored in the Prometheus time series database. In order to query the metrics we will use the [Expression browser in the Prometheus UI](http://localhost:9090).
