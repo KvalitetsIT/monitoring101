@@ -12,7 +12,7 @@ Basically each metric consists of:
 * A number of labels: Classification of what is measured
 * The actual metric
 
-For example: A metric showing how many bytes are currently allocated in non-heap storage
+For example: A metric showing how many bytes are currently allocated in non-heap storage in our KitHugs application.
 ```
 jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.6649136E7
 ```
