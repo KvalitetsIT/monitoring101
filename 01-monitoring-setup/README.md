@@ -33,8 +33,7 @@ TODO
 ## Validation the setup
 When you have started the compose setup and the two containers are running you can go to the Prometheus UI and try to evalute the following PromQL expression: up
 
-TODO : explain up
-
+The metric 'up' is a special metric that Promethus records when performing a scrape. It is a boolean where 1 indicates a successful scrape and 0 means that the scrape failed. Prometheus adds the label 'instance' showing which target was scraped.
 
 You should get an output similar to this:
 ```
@@ -45,5 +44,6 @@ up{instance="localhost:9090", job="prometheus"} 1
 up{instance="dotnet-app:8081", job="dotnet-app"} 0
 up{instance="grafana:3000", job="grafana"} 1
 ```
-This means that only Prometheus and Grafana was scraped succesfully which is what we expect at this point.
+
+This means that only Prometheus and Grafana was scraped succesfully at this point - which is what we expect.
 
