@@ -3,6 +3,7 @@ Let's start by looking at some of the metrics exposed by the KitHugs services. A
 You can see the data collected by Prometheus by accessing the following URLs:
 * java-app-a: http://localhost:8081/actuator/prometheus
 * java-app-b: http://localhost:9081/actuator/prometheus
+
 If you look at the Promethus configuration file you can see that both of these URLs are scraped by Prometheus as a part of the 'java-app' scrape job.
 
 ## What Metrics Do We Have and How Do They Look?
