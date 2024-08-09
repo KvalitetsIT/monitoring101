@@ -9,4 +9,8 @@ These technologies are often used in Kubernetes based architectures. In the repo
 
 First go through [The monitoring setup](01-monitoring-setup) in order to get Prometheus and Grafana up and running.
 
-Now we are ready to start monitoring some applications. Go through [The application setup](02-application-setup) in order to get the test applications running.
+Now we are ready to start monitoring some applications. 
+
+Go through [The application setup](02-application-setup) in order to get the test applications running.
+
+Get started [querying metrics with PromQL](03-promql-getting-started).
