@@ -18,9 +18,15 @@ For example: A metric showing how many bytes are currently allocated in non-heap
 jvm_memory_used_bytes{area="nonheap",id="miscellaneous non-heap storage",} 1.6649136E7
 ```
 
+There are (different kinds of metrics)[https://prometheus.io/docs/concepts/metric_types/].
+
+The example above is a gauge metric. This can be concluded from the metadata in the Prometheus output (see the #TYPE annotation).
+
+A gauge metric can increase and decrease.
+
 Key points when defining metrics:
 * Use snakecase for metric names and include the unit (at the end)
-* Always use 'baseunits' such as bytes, seconds - you can convert to other units in you dashboards later on
+* Always use 'base units' such as bytes, seconds - you can convert to other units in frontend tools for example Grafana dashboards.
 *
 *
 
