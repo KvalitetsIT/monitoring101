@@ -1,0 +1,9 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    url: http://prometheus:9090
+    access: proxy
+    isDefault: true
+    uid: prometheusdatasource #all grafana dashboards need a specific uid for the prometheus instance.
+    #we use "prometheusdatasource" as the uid everywhere. All test dashboards created in the future are automatically set to use this uid

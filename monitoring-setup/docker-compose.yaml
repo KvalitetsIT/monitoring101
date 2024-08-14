@@ -9,7 +9,7 @@ services:
       - MYSQL_ROOT_PASSWORD=rootroot
       - MYSQL_DATABASE=users
       - MYSQL_USER=dbuser
-      - MYSQL_PASSWORD=1234
+      - MYSQL_PASSWORD=1234file
     volumes:
       - ./prometheus/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml
   # Login: admin/admin
@@ -19,6 +19,9 @@ services:
       - monitoring101
     ports:
       - 3000:3000
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards/
 networks:
   # To create this run: docker network create monitoring101
   monitoring101:
