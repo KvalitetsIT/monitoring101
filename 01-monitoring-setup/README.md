@@ -27,8 +27,17 @@ You will also make changes to the configuration file later on.
 Remember: If you make changes to the configuration file it is necessary to remove the prometheus container (with docker compose rm) as the container need to be recreated for the configuration changes to take effect.
 
 ## Configuration of Grafana
+Configuration of Grafana is done in the files grafana/dashboards/dashboard.yaml and grafana/datasources/datasource.yaml
 
-TODO
+The datasource.yaml file is for configuring the datasource. By default this is set to look for Prometheus on port 9090. It is important to note that all Grafana dashboards need a Prometheus UID, which is used to determine which instance of Prometheus to use in case multiple instances exist. This UID is set to be "prometheusdatasource". Test dashboards created through the Docker setup automatically use this UID, but test dashboards created elsewhere (e.g. taken from the internet) may use a different UID, which will cause errors.
+
+The dashboard.yaml file configures settings for all dashboards: e.g. where and how they're stored.
+
+Dashboards are stored in grafana/dashboards in json format. In order to add new dashboards to the Docker setup, one should:
+* Create or update a dashboard through Grafana.
+* Click on the "Share" button while viewing the dashboard, then "Export".
+* Do NOT check the "Export for sharing for externally" button.
+* Press "Save to file" and move the file to the grafana/dashboards directory.
 
 ## Validation the setup
 When you have started the compose setup and the two containers are running you can go to the Prometheus UI and try to evalute the following PromQL expression: up
