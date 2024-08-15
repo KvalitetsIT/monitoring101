@@ -19,6 +19,9 @@ services:
       - monitoring101
     ports:
       - 3000:3000
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards/
 networks:
   # To create this run: docker network create monitoring101
   monitoring101:
