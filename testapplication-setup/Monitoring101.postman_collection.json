@@ -1,0 +1,93 @@
+{
+	"info": {
+		"_postman_id": "d8697171-2353-4d10-8396-1a78d03681b0",
+		"name": "Monitoring101",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3271485"
+	},
+	"item": [
+		{
+			"name": "Java App Requests",
+			"item": [
+				{
+					"name": "Httpcode 200 Java App Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/hello?name=hello",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"hello"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "hello"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Httpcode 400 Java App Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/hello?name=NOT_VALID",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"hello"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "NOT_VALID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Httpcode 500 Java App Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/hello?name=blablablablablabla",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"hello"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "blablablablablabla"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
