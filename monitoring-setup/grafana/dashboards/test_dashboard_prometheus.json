@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -403,13 +402,13 @@
     "list": []
   },
   "time": {
-    "from": "2024-08-14T08:23:51.833Z",
-    "to": "2024-08-14T10:40:42.157Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Test dashboard 1",
+  "title": "Test dashboard Prometheus",
   "uid": "edus55o1u1b0gd",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }
