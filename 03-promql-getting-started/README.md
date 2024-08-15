@@ -105,16 +105,17 @@ rate(prometheus_http_requests_total[20s])
 ...
 ```
 ![screenshot](images/increase_rate_3.png)
+
 The graph looks exactly the same. The rate and increase functions always produce graphs that look exactly the same. The only change is on the y-axis.
 
-The rate function works the same as the increase function - it just shows the increase per second during the interval, instead of the total increase during the interval.
+The rate function works the same as the increase function - it just shows the increase per second during the interval of 20 seconds, instead of the total increase during the interval.
 
 When hovering over the spikes, we are now given the values of 1.00 and 1.10 respectively. This means that HTTP requests were occurring at a rate of respectively 1.00 and 1.10 HTTP requests per second during the two spikes.
 
 ### Comparison
 So when should we use rate, and when should we use increase?
 
-Using rate gives us an estimate of the increase in requests per second. This makes sense when we are looking at data that increases at a rate where it makes sense to use seconds as a unit.
+Using rate gives us an estimate of the increase in requests per second. This makes sense when we are visualizing time intervals that are so small that it makes sense to use seconds as a unit. An example of this would be if we wanted only wanted to visualize the HTTP requests that were made in the past 5 minutes.
 
 When we use increase, we can (and should) interpret the points as estimates of the increase per [time unit]. For example, 
 
