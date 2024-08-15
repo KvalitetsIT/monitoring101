@@ -6,9 +6,11 @@ The folder monitoring_setup contains a docker-compose file which makes it easy f
 We will be using Prometheus to scrape a number of test applications and we will be using the Prometheus UI to learn more about how to query metrics using PromQL. 
 The Prometheus UI is a good tool to
 * Get an understanding about your application metrics
-* developing and debugging PromQL expressions (that you can use to build dashboards later on)
+* develop and debug PromQL expressions
 
-Grafana can be used for building dashboards as well as setting up alarms.
+Grafana can be used for 
+* building dashboards
+* setting up alarms
 
 The docker compose setup is self contained and you start it with 'docker compose up' as you would any other compose setup.
 
@@ -21,7 +23,7 @@ Configuration of Prometheus is done in the file prometheus/prometheus.yml
 
 It is here that it is configured which endpoints Prometheus should scrape. 
 
-When you start the setup it is configured to scrape Prometheus itself, Grafana, and a number of other endpoints (that are not started yet but don't worry).
+When you start the setup, it is configured to scrape Prometheus itself, Grafana, and a number of other endpoints (that are not started yet but don't worry).
 
 You will also make changes to the configuration file later on. 
 Remember: If you make changes to the configuration file it is necessary to remove the prometheus container (with docker compose rm) as the container need to be recreated for the configuration changes to take effect.
