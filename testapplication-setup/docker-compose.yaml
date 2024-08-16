@@ -77,6 +77,9 @@ services:
     ports:
       - 8090:8080
       - 8091:8081
+    depends_on:
+      mariadb:
+         condition: service_healthy
     environment:
       - "ConnectionStrings__db=Server=mariadb;UID=dbuser;PWD=1234;Database=hellodb"
       - TEST_VAR=monitoring101
