@@ -65,7 +65,7 @@ Answer: The 'by' removes labels that it does not know about whereas 'without' do
 
 sum by (job, version) (up * on (instance, job) group_left(version) application_information)
 
-## Increase and rate functions
+## Visualizing counters
 ### Overview
 
 In this section we will take a look at using the increase and rate functions for visualizing counter metrics. We'll do this by taking a look at the prometheus_http_requests_total metric, which for the purpose of this section was set to only visualize the HTTP requests to the /metrics endpoint. 
@@ -141,5 +141,50 @@ There is no objective answer to how long the intervals should be but a good rule
 rate(prometheus_http_requests_total[1h])
 ...
 ```
-### Gauges
-We've covered the increase and rate functions, which are used for counters. When dealing with metrics that can both increase and decrease (gauges), one should instead use the delta and deriv functions respectively.
+## Visualizing gauges
+### Intro to deriv functions
+We've covered the increase and rate functions, which are used for counters. Gauges are another type of Prometheus metric, which is used for data that can both increase and decrease over time. Prometheus provides a very neat function for dealing with gauges, which is called deriv. Unfortunately deriv does not work with counters, only gauges.
+
+Let's start by visualizing the number of heap bytes in use by Grafana:
+```
+...
+go_memstats_heap_inuse_bytes{job="grafana"}
+...
+```
+![screenshot](images/deriv_1.png)
+
+This provides us with a nice graph, but in some cases it can be difficult to judge whether our data is increasing or decreasing over time. One way of dealing with this is to use the deriv function:
+```
+...
+delta(go_memstats_heap_inuse_bytes{job="grafana"}[1m])
+...
+```
+![screenshot](images/deriv_2.png)
+
+The deriv function works somewhat similarly to the rate function and provides us with an estimate of the change in bytes per second over the period of the time we specifiy in [brackets]. For example, we can see a big spike at the timestamp 11:28:15 with a value of 28,320,250, which tells us that between 11:27:15 and 11:28:15 the number of heap bytes in use was increasing by roughly 28.3MB per second during that timeframe.
+
+### How does deriv work?
+The deriv function works fundamentally differently from the rate and increase functions.
+
+In short, data many times every single second. Prometheus provides us with snapshot of this data every, say, 15 seconds. From these snapshots we want to estimate at what rate our data changing.
+
+When we choose to use the deriv function, Prometheus uses linear regression to calculate the best possible estimate of the rate at which our data changes. Without getting into the heavy math as to why, linear regression is by far the best method for estimating the rate of change in data. Because of this, it is not good practice to use alternative functions like delta for gauges.
+
+Additionally, choosing our interval to be rather small (e.g. [1m] or [5m]) will usually give us the best estimates, but it's often perfectly reasonable to set our interval lengths to something longer (e.g. [1h]) if we want a prettier, smoother graph with fewer spikes.
+
+### Interpreting and modifying deriv
+Deriv calculates the *change per second*. But what if we want our visualization to display e.g. the hourly change in byte usage? We should take the following 3 steps:
+
+1) We simply multiply the output of the deriv function by 3600 to convert from seconds to hours:
+
+```
+...
+delta(go_memstats_heap_inuse_bytes{job="grafana"}[1m]) * 3600
+...
+```
+
+2) We clearly state in the title of the graph that it's a visualization of the *hourly* changes in byte usage.
+
+3) We optionally adjust the interval length to be [1h] or something similar. This is completely optional but should generally provide a good compromise an accurate and nice-looking graph.
+
+Similarly, one could e.g. visualize the per-minute changes by multiplying the output of the deriv function by 60, or one could divide the output of the deriv function by 1,000,000 to get the changes per second measured in MB.
