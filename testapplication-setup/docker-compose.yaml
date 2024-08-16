@@ -67,16 +67,19 @@ services:
       - JDBC_USER=dbuser
       - JDBC_PASS=1234
       - management_metrics_web_server_request_autotime_percentiles=0.95
-#  dotnet-app:
-#    image: kvalitetsit/kitnugs:dev
-#    networks:
-#      - monitoring101
-#    ports:
-#      - 8090:8080
-#      - 8091:8081
-#    environment:
-#      - "ConnectionStrings__db=server=mariadb;user=dbuser;password=1234;database=hellodb"
-#      - TEST_VAR=monitoring101
+  dotnet-app:
+#NOTE: Kitnugs has a main branch, which only supports MySQL/MariaDB, and a postgresql branch, which only supports Postgresql.
+#If we set the image to be kvalitetsit/kitnugs:dev, our application simply pulls whichever of the two branches was most recently updated, which is an issue when that happens to be the Postgresql branch.
+#For this reason we pull a specific commit from the main branch. 
+    image: kvalitetsit/kitnugs:1d3829c90cc422195f5f36076d9295f079de5cf3 
+    networks:
+      - monitoring101
+    ports:
+      - 8090:8080
+      - 8091:8081
+    environment:
+      - "ConnectionStrings__db=Server=mariadb;UID=dbuser;PWD=1234;Database=hellodb"
+      - TEST_VAR=monitoring101
   mariadb:
     image: mariadb:10.6
     healthcheck:
