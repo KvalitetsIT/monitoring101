@@ -48,6 +48,7 @@ services:
       - JDBC_USER=dbuser
       - JDBC_PASS=1234
       - management_metrics_web_server_request_autotime_percentiles=0.95
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true #required to make Flyway work in the Java applications
   java-app-b:
     image: kvalitetsit/kithugs:dev
     healthcheck:
@@ -67,6 +68,7 @@ services:
       - JDBC_USER=dbuser
       - JDBC_PASS=1234
       - management_metrics_web_server_request_autotime_percentiles=0.95
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true #required to make Flyway work in the Java applications
   dotnet-app:
 #NOTE: Kitnugs has a main branch, which only supports MySQL/MariaDB, and a postgresql branch, which only supports Postgresql.
 #If we set the image to be kvalitetsit/kitnugs:dev, our application simply pulls whichever of the two branches was most recently updated, which is an issue when that happens to be the Postgresql branch.
