@@ -166,16 +166,16 @@ The deriv function works somewhat similarly to the rate function and provides us
 ### How does deriv work?
 The deriv function works fundamentally differently from the rate and increase functions.
 
-In short, data many times every single second. Prometheus provides us with snapshot of this data every, say, 15 seconds. From these snapshots we want to estimate at what rate our data changing.
+In short, data changes constantly. Prometheus provides us with snapshot of this data every, say, 15 seconds. From these snapshots we want to estimate at what rate our data changing.
 
 When we choose to use the deriv function, Prometheus uses linear regression to calculate the best possible estimate of the rate at which our data changes. Without getting into the heavy math as to why, linear regression is by far the best method for estimating the rate of change in data. Because of this, it is not good practice to use alternative functions like delta for gauges.
 
 Additionally, choosing our interval to be rather small (e.g. [1m] or [5m]) will usually give us the best estimates, but it's often perfectly reasonable to set our interval lengths to something longer (e.g. [1h]) if we want a prettier, smoother graph with fewer spikes.
 
 ### Interpreting and modifying deriv
-Deriv calculates the *change per second*. But what if we want our visualization to display e.g. the hourly change in byte usage? We should take the following 3 steps:
+Deriv calculates the *change per second*. But what if we want our visualization to display e.g. the hourly change in byte usage over the course of the last 7 days? We should take the following 3 steps:
 
-1) We simply multiply the output of the deriv function by 3600 to convert from seconds to hours:
+1) We multiply the output of the deriv function by 3600 to convert it from seconds to hours:
 
 ```
 ...
@@ -185,6 +185,6 @@ delta(go_memstats_heap_inuse_bytes{job="grafana"}[1m]) * 3600
 
 2) We clearly state in the title of the graph that it's a visualization of the *hourly* changes in byte usage.
 
-3) We optionally adjust the interval length to be [1h] or something similar. This is completely optional but should generally provide a good compromise an accurate and nice-looking graph.
+3) We optionally adjust the interval length to be [1h] or something similar. This is completely optional but should generally provide an accurate and nice-looking graph.
 
 Similarly, one could e.g. visualize the per-minute changes by multiplying the output of the deriv function by 60, or one could divide the output of the deriv function by 1,000,000 to get the changes per second measured in MB.
