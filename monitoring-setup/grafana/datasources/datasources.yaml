@@ -7,3 +7,17 @@ datasources:
     isDefault: true
     uid: prometheusdatasource #all grafana dashboards need a specific uid for the prometheus instance.
     #we use "prometheusdatasource" as the uid everywhere. All test dashboards created in the future are automatically set to use this uid
+  - name: MySQL
+    type: mysql
+    url: mariadb:3306
+    access: proxy
+    isDefault: false
+    database: hellodb
+    user: dbuser
+    secureJsonData:
+      password: 1234
+    jsonData:
+      maxOpenConns: 0
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+
