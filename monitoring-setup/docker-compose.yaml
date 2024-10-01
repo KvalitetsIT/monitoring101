@@ -12,6 +12,7 @@ services:
       - MYSQL_PASSWORD=1234
     volumes:
       - ./prometheus/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml
+      - ./prometheus/recording_rules.yml:/opt/bitnami/prometheus/conf/recording_rules.yml
   # Login: admin/admin
   grafana:
     image: grafana/grafana:11.1.3

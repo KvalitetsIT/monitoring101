@@ -1,5 +1,6 @@
 global:
   scrape_interval: 10s
+  evaluation_interval: 15s #how often to calculate metrics defined in recording_rules.yml
 scrape_configs:
  - job_name: prometheus
    static_configs:
@@ -30,4 +31,6 @@ scrape_configs:
    static_configs:
     - targets:
        - dotnet-app:8081
-
+       
+rule_files:
+  - /opt/bitnami/prometheus/conf/recording_rules.yml #location of file that specifies which default metrics should be configured
