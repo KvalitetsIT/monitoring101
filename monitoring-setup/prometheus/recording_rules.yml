@@ -2,8 +2,8 @@ groups:
   - name: http_requests_grouped
     rules:
       #Group all 1xx status codes
-      - record: promhttp_metric_handler_requests_total:1xx
-        expr: sum(promhttp_metric_handler_requests_total{code=~"1.."}) by (job) or vector(0)
+      - record: promhttp_metric_handler_requests_total:1xx #name of the new metric
+        expr: sum(promhttp_metric_handler_requests_total{code=~"1.."}) by (job) or vector(0) #promQL code for calculating the metric
     
       #Group all 2xx status codes
       - record: promhttp_metric_handler_requests_total:2xx

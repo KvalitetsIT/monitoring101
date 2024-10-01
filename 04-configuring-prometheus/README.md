@@ -31,7 +31,7 @@ promhttp_metric_handler_requests_total{code="503"} 0
 ...
 ```
 
-Our goal is to make Prometheus to group these into 5 bins to make the metrics less cluttered:
+Our goal is to make Prometheus group these into 5 bins to make the metrics less cluttered:
 
 ```
 promhttp_metric_handler_requests_total:1xx 0
