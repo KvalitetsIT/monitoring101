@@ -20,3 +20,11 @@ groups:
       #Group all 5xx status codes
       - record: promhttp_metric_handler_requests_total:5xx
         expr: sum(promhttp_metric_handler_requests_total{code=~"5.."}) by (job) or vector(0)
+
+      #Fraction of HTTP requests finished in 15ms or less
+      - record: http_server_requests_fraction_finished_in:15ms
+        expr: (sum(http_server_requests_seconds_bucket{le="0.015"}) by (method, uri)) / (sum(http_server_requests_seconds_bucket{le="+Inf"}) by (method, uri))
+
+      #Fraction of HTTP requests finished in 400ms or less
+      - record: http_server_requests_fraction_finished_in:400ms
+        expr: (sum(http_server_requests_seconds_bucket{le="0.4"}) by (method, uri)) / (sum(http_server_requests_seconds_bucket{le="+Inf"}) by (method, uri))

@@ -49,6 +49,7 @@ services:
       - JDBC_PASS=1234
       - management_metrics_web_server_request_autotime_percentiles=0.95
       - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true #required to make Flyway work in the Java applications
+      - management_metrics_distribution_slo_http_server_requests=15ms,400ms
   java-app-b:
     image: kvalitetsit/kithugs:dev
     healthcheck:

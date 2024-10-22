@@ -101,3 +101,71 @@ global:
 ```
 
 The end result is that our new metrics are available in Prometheus and Grafana. It is however important to note that they will not show up the endpoints of our applications.
+
+### Configuring Micrometer to keep track of HTTP requests - Histograms
+Sometimes one is interested in monitoring metrics related to HTTP request processing time. In this section we'll take a look at how to implement a metric which tracks two things: 1) the percentage of HTTP requests that finish in less than 15ms and 2) the percentage of HTTP requests that finish in less than 400ms.
+
+In order to achieve this, we will be configuring the default HTTP metrics in Micrometer. This can either be achieved using an application.properties file or by setting environment variables directly in our compose.yaml file. We will be doing the latter because it's easier.
+
+We do this simply by setting the management_metrics_distribution_slo_http_server_requests environment variable to 15ms,400ms. This is done by adding the line ```management_metrics_distribution_slo_http_server_requests=15ms,400ms``` to our compose file like so:
+
+```
+  java-app-a:
+    image: kvalitetsit/kithugs:dev
+    healthcheck:
+       test: "curl --fail http://localhost:8081/actuator/prometheus || exit 1"
+       interval: 5s
+       timeout: 60s
+       start_period: 5s
+    networks:
+      - monitoring101
+    depends_on:
+      mariadb:
+         condition: service_healthy
+    ports:
+      - 8081:8081
+    environment:
+      - management_metrics_distribution_slo_http_server_requests=15ms,400ms 
+
+```
+
+The "management_metrics_distribution_slo" part of the env variable is used whenever we want to modify default metrics in Micrometer using this approach. The "http_server_requests" part tells Micrometer we only want to modify the metrics related to HTTP server requests.
+
+Once the first HTTP request has been made, the following metrics are generated:
+
+```
+#GET
+http_server_requests_seconds_bucket{error="none",exception="none",method="GET",outcome="SUCCESS",status="200",uri="/v1/hello",le="0.015"} 5
+http_server_requests_seconds_bucket{error="none",exception="none",method="GET",outcome="SUCCESS",status="200",uri="/v1/hello",le="0.4"} 10
+http_server_requests_seconds_bucket{error="none",exception="none",method="GET",outcome="SUCCESS",status="200",uri="/v1/hello",le="+Inf"} 10
+
+#POST
+http_server_requests_seconds_bucket{error="none",exception="none",method="POST",outcome="SUCCESS",status="200",uri="/v1/hello",le="0.015"} 1
+http_server_requests_seconds_bucket{error="none",exception="none",method="POST",outcome="SUCCESS",status="200",uri="/v1/hello",le="0.4"} 6
+http_server_requests_seconds_bucket{error="none",exception="none",method="POST",outcome="SUCCESS",status="200",uri="/v1/hello",le="+Inf"} 6
+```
+
+The metrics with |```le="+Inf"``` specify the total number of HTTP requests made of the type specified (GET or POST) and is automatically included by Micrometer. The metrics with |```le="0.4"|``` specify the number of HTTP requests that lasted at most 400ms. The metrics with |```le="0.015"|``` specify the number of HTTP requests that lasted at most 15ms. Note that these metrics are cumulative, so all requests included in the ```le="0.015"|``` metric are also included in the ```le="0.4"|``` metric.
+
+Now how do we create metrics which show the fraction of HTTP requests that are completed in 15ms?
+
+As discussed earlier in this chapter, one approach is to use the metrics we just generated to define custom metrics in our recording_rules.yml file. Another approach is to calculate it in Grafana. We'll do the former by adding these two metrics to our recording_rules.yml file:
+```
+#Fraction of HTTP requests finished in 15ms or less
+- record: http_server_requests_fraction_finished_in:15ms
+  expr: (sum(http_server_requests_seconds_bucket{le="0.015"}) by (method, uri)) / (sum(http_server_requests_seconds_bucket{le="+Inf"}) by (method, uri))
+
+#Fraction of HTTP requests finished in 400ms or less
+- record: http_server_requests_fraction_finished_in:400ms
+  expr: (sum(http_server_requests_seconds_bucket{le="0.4"}) by (method, uri)) / (sum(http_server_requests_seconds_bucket{le="+Inf"}) by (method, uri))
+```
+
+The first metric takes the number of HTTP requests finished in 15ms and divides it by the total number of requests, grouped by URI and method. Method here refers to POST, GET, etc and URI refers to the URI where the HTTP request happened. The second metric does the same, but for 400ms instead of 15ms.
+
+Once these metrics have been set up, we can easily access them in Prometheus and Grafana, allowing us to make visualizations like the following:
+
+![screenshot](images/visualization_1.png)
+
+The graph in the screenshot was generating by using the query ```http_server_requests_fraction_finished_in:15ms``` in Grafana.
+
+It should be noted that a somewhat similar method exists, which consists of setting the environment variable ´´´management_metrics_distribution_percentiles-histogram_http_server_requests´´´ to ´´´true´´´ *instead* of setting the ´´´management_metrics_distribution_slo_http_server_requests´´´ environment variable. This causes Micrometer to automatically generate a huge amount of metrics similar to ours, but at random interval lengths. I.e. it might make Micrometer count the number of HTTP requests that lasted less than e.g. 137.1231ms or 37.2133ms. This is less useful than the approach we used in this chapter because it gives us significantly less control over the metrics available to us.
