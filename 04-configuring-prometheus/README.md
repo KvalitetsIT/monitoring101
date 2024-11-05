@@ -1,8 +1,8 @@
-## Configuring Prometheus
+# Configuring Prometheus
 Prometheus comes with a bunch of default metrics - in this section we will take a look at how to configure them using recording rules.
 
 
-### Before we start
+## Before we start
 Our data goes through the following process:
 
 1) Our applications calculate and expose metrics to an endpoint.
@@ -19,7 +19,7 @@ Modifying metrics in step 3) is what we do when we write promQL queries in Grafa
 
 The main advantage of choosing to modify metrics in step 2) compared to step 3) is that it makes our modified metrics available in Prometheus (and not just Grafana). This allows us to use the metrics for creating Prometheus alerts. Additionally, it can make it slightly easier to modify and create visualizations in Grafana which rely on complicated promQL queries. 
 
-### Configuring Prometheus
+## Configuring Prometheus
 We will be taking a look at the default metric promhttp_metric_handler_requests_total which tells us the total number of http requests to the /metrics endpoint grouped by http code. This metric gives us one value for each individual http code, which can get quite messy:
 
 ```
@@ -41,7 +41,9 @@ promhttp_metric_handler_requests_total:4xx 0
 promhttp_metric_handler_requests_total:5xx 0
 ```
 
-Firstly, we need to create a recording_rules.yml file, which will inform Prometheus what metrics to group together and how. In this file we define a group for the default metric we wish to configure and specify each of the new metrics we wish to create:
+### Grouping HTTP Codes
+
+Firstly, we need to create a ```recording_rules.yml``` file, which will inform Prometheus what metrics to group together and how. In this file we define a group for the default metric we wish to configure and specify each of the new metrics we wish to create:
 
 ```
 groups:
@@ -92,7 +94,7 @@ rule_files:
   - /opt/bitnami/prometheus/conf/recording_rules.yml
 ```
 
-Metrics defined through recording rules are by default update every 60s. All other metrics are usually calculated every 15s. Because of this, we want to specify in the prometheus.yml file that our new metrics should be calculated every 15s. We do this by adding ```evaluation interval: 15s``` to the prometheus.yml file in this location:
+Metrics defined through recording rules update every 60s by default. All other metrics are usually calculated every 15s. Because of this, we want to specify in the prometheus.yml file that our new metrics should be calculated every 15s. We do this by adding ```evaluation interval: 15s``` to the prometheus.yml file in this location:
 
 ```
 global:
@@ -102,10 +104,12 @@ global:
 
 Now our new metrics are available in Prometheus and Grafana. It is however important to note that these new metrics will not show up in the endpoints of our applications.
 
-### Configuring Micrometer to keep track of HTTP requests - Histograms
+## Configuring Micrometer to keep track of HTTP requests - Histograms
 Sometimes one is interested in monitoring metrics related to HTTP request processing time. In this section we'll take a look at how to implement a metric which tracks two things: 1) the percentage of HTTP requests that finish in less than 15ms and 2) the percentage of HTTP requests that finish in less than 400ms.
 
 In order to achieve this, we will be configuring the default HTTP metrics in Micrometer. This can either be achieved using an application.properties file or by setting environment variables directly in our compose.yaml file. We will be doing the latter because it's easier.
+
+### Making the Number of Fast HTTP Requests a Metric 
 
 We do this simply by setting the management_metrics_distribution_slo_http_server_requests environment variable to *15ms,400ms*. This is done by adding the line ```management_metrics_distribution_slo_http_server_requests=15ms,400ms``` to our compose file:
 
@@ -147,6 +151,7 @@ http_server_requests_seconds_bucket{error="none",exception="none",method="POST",
 
 The metrics with |```le="+Inf"``` specify the total number of HTTP requests made of the type specified (GET or POST) and is automatically included by Micrometer. The metrics with |```le="0.4"|``` specify the number of HTTP requests that lasted at most 400ms. The metrics with |```le="0.015"|``` specify the number of HTTP requests that lasted at most 15ms. Note that these metrics are cumulative, so all requests included in the ```le="0.015"|``` metric are also included in the ```le="0.4"|``` metric.
 
+### Making the Percentage of Fast HTTP Requests a Metric 
 Now how do we create metrics which show the fraction of HTTP requests that are completed in 15ms?
 
 As discussed earlier in this chapter, one approach is to use the metrics we just generated to define custom metrics in our recording_rules.yml file. Another approach is to calculate it in Grafana. We'll do the former by adding these two metrics to our recording_rules.yml file:
@@ -168,4 +173,5 @@ Once these metrics have been set up, we can easily access them in Prometheus and
 
 The graph in the screenshot was generating by using the query ```http_server_requests_fraction_finished_in:15ms``` in Grafana.
 
+### An Alternative Approach to Histograms
 It should be noted that a similar method exists, which consists of setting the environment variable ´´´management_metrics_distribution_percentiles-histogram_http_server_requests´´´ to ´´´true´´´ *instead* of setting the ´´´management_metrics_distribution_slo_http_server_requests´´´ environment variable. This causes Micrometer to automatically generate a huge amount of metrics similar to ours, but at random interval lengths. I.e. it might make Micrometer count the number of HTTP requests that lasted less than e.g. 137.1231ms or 37.2133ms. This is less useful than the approach we used in this chapter because it gives us significantly less control over the metrics available to us.
