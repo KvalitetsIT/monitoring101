@@ -32,5 +32,11 @@ scrape_configs:
     - targets:
        - dotnet-app:8081
        
+ - job_name: keycloak
+   metrics_path: /metrics
+   static_configs:
+    - targets:
+       - keycloak:9000
+       
 rule_files:
   - /opt/bitnami/prometheus/conf/recording_rules.yml #location of file that specifies which default metrics should be configured
