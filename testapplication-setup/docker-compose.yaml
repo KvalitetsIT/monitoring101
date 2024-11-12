@@ -100,6 +100,28 @@ services:
       - MARIADB_PASSWORD=1234
     networks:
       - monitoring101
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    command: >
+        start --hostname-strict=false --http-port=8080 --http-enabled=true --https-port=-1
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=kit
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=Test1234
+      - KEYCLOAK_LOGLEVEL=DEBUG
+      - DB_VENDOR=h2
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
+    networks:
+      - monitoring101
+    depends_on:
+      java-app-a:
+         condition: service_healthy
+      java-app-b:
+         condition: service_healthy
+    ports:
+      - "8092:8080" #keycloak is accessed at localhost:8092
+      - "9000:9000" #but keycloak's metrics endpoint is localhost:9000/metrics
+
 networks:
   # To create this run: docker network create monitoring101
   monitoring101:
