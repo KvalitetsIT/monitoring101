@@ -111,6 +111,7 @@ services:
       - DB_VENDOR=h2
       - KC_HEALTH_ENABLED=true
       - KC_METRICS_ENABLED=true
+      - KC_HTTP_METRICS_SLOS=50,100,150,200,250,300,350,400,450,500 #sets bucket sizes for HTTP related metrics
     networks:
       - monitoring101
     depends_on:
