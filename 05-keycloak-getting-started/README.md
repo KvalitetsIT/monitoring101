@@ -144,3 +144,7 @@ In order to customize our stat further, we do 3 additional things in the options
 ![screenshot](images/keycloak_4.png)
 
 **The number shown by "Show percentage change" represents how much something has changed over the time period displayed on the dashboard.** For example, if you're looking at data for the last hour, the number shows the change in that hour. If you switch to see data for the last 3 days, the number will show the change over those 3 days instead.
+
+### Additional Visualizations of Keycloak Data
+
+The "Keycloak Metrics" dashboard in Grafana contains the visualizations we've created in this chapter in addition to visualizations of several other relevant Keycloak metrics. These metrics include the number of users and the number of failed logins.
