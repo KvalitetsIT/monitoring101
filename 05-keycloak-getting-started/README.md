@@ -117,7 +117,7 @@ Time series graphs like the one we created are nice if one is interested in visu
 
 ![screenshot](images/keycloak_3.png)
 
-Including this kind of statistics makes it very easy for users to get an overview of the current situation. From this visualization we can clearly see that the average login time today is 54.0ms - a tiny increase of 0.1% compared to yesterday.
+Including this kind of statistics makes it very easy for users to get an overview of the current situation. From this visualization we can clearly see that the average login time is 54.0ms - a tiny increase of 0.1% during the past hour.
 
 In order to implement the Stat, we add a visualization with the following PromQL query to our Grafana dashboard:
 
@@ -139,6 +139,8 @@ In order to customize our stat further, we do 3 additional things in the options
 
 ![screenshot](images/keycloak_5.png)
 
-3) We tick "Show percentage change", which adds a number showing the change in login times compared to yesterday (in our case, 0.0998%). By default, this number is green when there's been an increase and red when there's been a decrease in our metric. For our data we want the opposite, since a decrease in login times is good. To achieve this, we select "Inverted" under "Percent change color mode". 
+3) We tick "Show percentage change", which adds a number showing the change in login times (in our case, 0.0998%). By default, this number is green when there's been an increase and red when there's been a decrease in our metric. For our data we want the opposite, since a decrease in login times is good. To achieve this, we select "Inverted" under "Percent change color mode". 
 
 ![screenshot](images/keycloak_4.png)
+
+**The number shown by "Show percentage change" represents how much something has changed over the time period displayed on the dashboard.** For example, if you're looking at data for the last hour, the number shows the change in that hour. If you switch to see data for the last 3 days, the number will show the change over those 3 days instead.
