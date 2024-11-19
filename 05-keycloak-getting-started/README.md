@@ -1,5 +1,5 @@
 # Keycloak Getting Started
-In this section we will bet aking a look at how to setup Keycloak and access its metrics.
+In this section we will be taking a look at how to setup Keycloak and access its metrics.
 
 ## Adding Keycloak
 We add Keycloak to our docker-compose file in a similar way to the other applications, but with a few key differences:
@@ -31,15 +31,15 @@ services:
 
 ```
 
-Keycloak can be started in a development mode using the start-dev command, however the a metrics endpoint cannot be created when using development mode. Because of this, we use the "start" command along with a few arguments which allow us to quickly start Keycloak without setting up HTTPS.
+We use the "start" command along with a few arguments which allow us to quickly start Keycloak without setting up HTTPS. One might be tempted to start Keycloak in development mode using the start-dev command, however the metrics endpoint does not work in development mode. 
 
 In order to enable the metrics endpoint, we have to:
 
-1) Set the KC_HEALTH_ENABLED and KC_METRICS_ENABLED environment variables to true, which enable health and metrics endpoints respectively.
+1) Set the KC_HEALTH_ENABLED and KC_METRICS_ENABLED environment variables to true, which enable health and metrics endpoints respectively. We did this in the code block above.
 
-2) Mount port 8080 *and* port 9000. Port 8080 is the default port for most of Keycloak. The /metrics and /health are however by default located on port 9000.
+2) Mount port 8080 *and* port 9000. Port 8080 is the default port for most of Keycloak. The /metrics and /health are however by default located on port 9000. We did this in the code block above.
 
-3) Finally, we have to add the following code to prometheus.yml in order to make prometheus scrape Keycloak's /metrics endpoint:
+3) Finally, we have to add the following code to our prometheus.yml in order to make prometheus scrape Keycloak's /metrics endpoint:
 
 ```
  - job_name: keycloak
@@ -53,7 +53,7 @@ After running docker compose, Keycloak can then be accessed at localhost:8092 an
 
 ## Configuring Keycloak metrics
 
-Keycloak comes with 3 environment variables which can be used to enable additional metrics that are useful for creating histograms. These are all set to false by default. The environment variables are:
+Keycloak comes with 3 environment variables which can be used to enable additional metrics that are useful for monitoring e.g. login times. These are all set to false by default. The environment variables are:
 
 1) KC_CACHE_METRICS_HISTOGRAMS_ENABLED. If set to true, buckets for various cache related metrics are enabled. These metrics do not appear to very useful. 
 
@@ -77,21 +77,24 @@ Buckets can be customized to be any value in miliseconds, however all HTTP metri
 
 ## What do all of these metrics mean?
 
-One should be very careful when interpreting the meaning of each Keycloak metric. For some reason, Keycloak uses very unintuitive metric names.
+One should be very careful when interpreting the meaning of each Keycloak metric. For some reason, Keycloak uses very unintuitive metric names. Here's a brief overview of a few important metrics:
 
-vendor_statistics_number_of_entries{cache="users",cache_manager="keycloak",} is the total number of users registered.
-http_server_requests_seconds_count{method="POST",outcome="SUCCESS",status="200",uri="/realms/{realm}/login-actions/authenticate",} is the number of failed logins (due to wrong password or similar)
-http_server_requests_seconds_count{method="GET",outcome="SUCCESS",status="200",uri="/realms/{realm}/protocol/{protocol}/auth",} is the total number of successful logins
+| Metric  | Explanation |
+| ------------- | ------------- |
+| vendor_statistics_number_of_entries{cache="users",cache_manager="keycloak",}  | Total number of users registered in Keycloak. |
+| http_server_requests_seconds_count{method="POST",outcome="SUCCESS",status="200",uri="/realms/{realm}/login-actions/authenticate",}  | The number of failed logins (e.g. due to wrong password or similar)  |
+| http_server_requests_seconds_count{method="POST",outcome="REDIRECTION",status="302",uri="/realms/{realm}/login-actions/authenticate",}  | The number of successful logins. |
+| http_server_requests_seconds_bucket{method="POST",outcome="REDIRECTION",status="302",uri="/realms/{realm}/login-actions/authenticate",le="*X*"}  | The number of successful logins which lasted less than *X* seconds. |
 
 ## Is it possible to customize metrics further?
 
-A lot can be achieved simply by using the aforementioned environment variable KC_HTTP_METRICS_SLOS and Keycloak's built-in metrics. However, if this proves to be inadequate, one could consider looking into the Keycloak Metrics SPI https://github.com/aerogear/keycloak-metrics-spi. One should however note that a lot of the metrics added by Keycloak Metrics SPI already exist as default metrics in Keycloak, they're just named differently.
+A lot can be achieved simply by using the previously mentioned environment variable KC_HTTP_METRICS_SLOS and Keycloak's built-in metrics. However, if this proves to be inadequate, one could consider looking into the Keycloak Metrics SPI https://github.com/aerogear/keycloak-metrics-spi. One should however note that a lot of the metrics added by Keycloak Metrics SPI already exist as default metrics in Keycloak, they're just named differently.
 
 ## How do we visualize and interpret Keycloak metrics?
 
 ### Using Time Series Graphs to visualize Login Times
 
-Let's build a Grafana dashboard using the metrics we set up. Our first goal is to visualize how many logins finish in 50/100/200/400ms. We'll be doing exclusively using Grafana. However, as discussed in previous chapters, an alternative way of solving this  is to create custom metrics in our recording_rules.yml file. We'll be creating the following visualization:
+Let's build a Grafana dashboard using the Keycloak metrics just added to our endpoint. Our first goal is to visualize how quickly login tokens are created. We'll be creating the following visualization using Grafana:
 
 ![screenshot](images/keycloak_1.png)
 
@@ -105,15 +108,15 @@ sum(increase(http_server_requests_seconds_bucket{method="POST", outcome="REDIREC
 
 This query first counts the increase in the number of successful login attempts which finished in 0.05 seconds during the past 24 hours. It then divides that number by the total increase in successful login attempts during the past 24 hours. This gives us the fraction of login attempts that finished in 0.05 seconds or less.
 
-The 3 other queries do exactly the same, except for 0.10, 0.20 and 0.40 seconds respectively:
+The 3 other queries do exactly the same, except for 0.10, 0.20 and 0.40 seconds respectively by replacing the ```le="0.05"``` part in the query above:
 
 ![screenshot](images/keycloak_2.png)
 
-Finally, we adjust various settings in Grafana to make the visualization prettier and add a description. 
+Finally, we adjust various settings in Grafana to make the visualization prettier and add a description. This won't be covered in detail in this chapter.
 
 ### Using Stats to get an Overview of Login Times
 
-Time series graphs like the one we created are nice if one is interested in visualizing the change over the course of a period of time. It is however a good idea to supplement with time series visualizations with raw data using "Stat" visualization in Grafana:
+Time series graphs like the one we created are nice if one is interested in visualizing the change over the course of a period of time. It is however a good idea to supplement time series visualizations with raw data using "Stat" visualizations in Grafana:
 
 ![screenshot](images/keycloak_3.png)
 
@@ -122,10 +125,12 @@ Including this kind of statistics makes it very easy for users to get an overvie
 In order to implement the Stat, we add a visualization with the following PromQL query to our Grafana dashboard:
 
 ```
-sum(increase(http_server_requests_seconds_sum{method="POST",outcome="REDIRECTION",status="302",uri="/realms/{realm}/login-actions/authenticate",}[24h]))
+sum(increase(http_server_requests_seconds_sum{method="POST",outcome="REDIRECTION",status="302",uri="/realms/{realm}/login-actions/authenticate",}[$__range]))
 / 
-sum(increase(http_server_requests_seconds_count{method="POST",outcome="REDIRECTION",status="302",uri="/realms/{realm}/login-actions/authenticate",}[24h]))
+sum(increase(http_server_requests_seconds_count{method="POST",outcome="REDIRECTION",status="302",uri="/realms/{realm}/login-actions/authenticate",}[$__range]))
 ```
+
+The ```$__range``` variable is a global variable which is automatically set to the timeframe our Grafana dashboard is showcasing. For example, if our dashboard is set to show data from the past 24 hours, the ```$__range``` variable will be set to 24h and our Stat will display the average login time in the past 24 hours.
 
 This query first calculates the total duration it took to process succesful login attempts during the past 24 hours. It then divides that by the total number of successful login attempts in the past 24 hours. This gives us the average login time.
 
@@ -143,7 +148,11 @@ In order to customize our stat further, we do 3 additional things in the options
 
 ![screenshot](images/keycloak_4.png)
 
-**The number shown by "Show percentage change" represents how much something has changed over the time period displayed on the dashboard.** For example, if you're looking at data for the last hour, the number shows the change in that hour. If you switch to see data for the last 3 days, the number will show the change over those 3 days instead.
+**The number shown by "Show percentage change" represents how much something has changed over the time period displayed on the dashboard:** 
+
+![screenshot](images/keycloak_7.png)
+
+Final note: As discussed in previous chapters, an alternative approach to creating this kind of visualization is to create custom metrics in our recording_rules.yml file.
 
 ### Additional Visualizations of Keycloak Data
 
