@@ -26,7 +26,7 @@
         "type": "prometheus",
         "uid": "prometheusdatasource"
       },
-      "description": "Shows the fraction of successful login attempts that finished in 50, 100, 200 and 400ms respectively. Only login attempts during the past 24 hours are considered.",
+      "description": "Shows the fraction of successful login attempts that finished in 50, 100, 200 and 400ms respectively. Only recent login attempts are considered.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -309,7 +309,7 @@
         "type": "prometheus",
         "uid": "prometheusdatasource"
       },
-      "description": "This chart shows what fraction of login attempts in the past 24 hours were successful.",
+      "description": "This chart shows what fraction of recent login attempts were successful.",
       "fieldConfig": {
         "defaults": {
           "color": {
