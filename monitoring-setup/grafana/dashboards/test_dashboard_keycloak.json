@@ -26,6 +26,31 @@
         "type": "prometheus",
         "uid": "prometheusdatasource"
       },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"font-size: 30px; text-align: left;\">\n  ${__from:date:YYYY-MM-DD HH:mm:ss} to <br /> ${__to:date:YYYY-MM-DD HH:mm:ss}\n</div>",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.1.3",
+      "title": "Showing data for time period",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheusdatasource"
+      },
       "description": "Shows the fraction of successful login attempts that finished in 50, 100, 200 and 400ms respectively. Only recent login attempts are considered.",
       "fieldConfig": {
         "defaults": {
@@ -38,6 +63,8 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 1,
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 8,
@@ -87,9 +114,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
+        "h": 11,
+        "w": 18,
+        "x": 6,
         "y": 0
       },
       "id": 1,
@@ -172,6 +199,79 @@
         "type": "prometheus",
         "uid": "prometheusdatasource"
       },
+      "description": "Shows how many logins finished in 400ms or less during the timeframe the dashboard is set to visualize.",
+      "fieldConfig": {
+        "defaults": {
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.9
+              },
+              {
+                "color": "green",
+                "value": 0.95
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 4
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheusdatasource"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.4\"}[$__range])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[$__range])) or vector(1)",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Logins finished in 400ms",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheusdatasource"
+      },
       "description": "Shows the average time to login during the time frame the dashboard is set to visualize.",
       "fieldConfig": {
         "defaults": {
@@ -199,10 +299,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 4,
+        "h": 6,
+        "w": 6,
         "x": 0,
-        "y": 10
+        "y": 8
       },
       "id": 2,
       "options": {
@@ -238,70 +338,6 @@
         }
       ],
       "title": "Average login time",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheusdatasource"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 4,
-        "x": 4,
-        "y": 10
-      },
-      "id": 3,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheusdatasource"
-          },
-          "editorMode": "code",
-          "expr": "sum(vendor_statistics_number_of_entries{cache=\"users\",cache_manager=\"keycloak\",})",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Number of users",
       "type": "stat"
     },
     {
@@ -365,10 +401,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
-        "w": 16,
-        "x": 8,
-        "y": 10
+        "h": 11,
+        "w": 18,
+        "x": 6,
+        "y": 11
       },
       "id": 6,
       "options": {
@@ -425,10 +461,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 4,
+        "h": 4,
+        "w": 3,
         "x": 0,
-        "y": 17
+        "y": 14
       },
       "id": 5,
       "options": {
@@ -490,10 +526,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 4,
-        "x": 4,
-        "y": 17
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 14
       },
       "id": 4,
       "options": {
@@ -530,6 +566,70 @@
       ],
       "title": "Failed logins",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheusdatasource"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 18
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheusdatasource"
+          },
+          "editorMode": "code",
+          "expr": "sum(vendor_statistics_number_of_entries{cache=\"users\",cache_manager=\"keycloak\",})",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of users",
+      "type": "stat"
     }
   ],
   "refresh": "",
@@ -539,7 +639,7 @@
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
