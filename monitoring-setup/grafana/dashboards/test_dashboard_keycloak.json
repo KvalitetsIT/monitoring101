@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 6,
+  "id": 5,
   "links": [],
   "panels": [
     {
@@ -114,7 +114,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.05\"}[24h])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[24h]))",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.05\"}[$__range])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[$__range]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -130,7 +130,7 @@
             "uid": "prometheusdatasource"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.1\"}[24h])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[24h]))",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.1\"}[$__range])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[$__range]))",
           "hide": false,
           "instant": false,
           "legendFormat": "<=100ms",
@@ -143,7 +143,7 @@
             "uid": "prometheusdatasource"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.2\"}[24h])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[24h]))",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.2\"}[$__range])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[$__range]))",
           "hide": false,
           "instant": false,
           "legendFormat": "<=200ms",
@@ -156,7 +156,7 @@
             "uid": "prometheusdatasource"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.4\"}[24h])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[24h]))",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\",le=\"0.4\"}[$__range])) / sum(increase(http_server_requests_seconds_bucket{method=\"POST\", outcome=\"REDIRECTION\", uri=\"/realms/{realm}/login-actions/authenticate\", le=\"+Inf\"}[$__range]))",
           "hide": false,
           "instant": false,
           "legendFormat": "<=400ms",
@@ -230,7 +230,7 @@
             "uid": "prometheusdatasource"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_sum{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",}[24h])) / sum(increase(http_server_requests_seconds_count{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",}[24h]))",
+          "expr": "sum(increase(http_server_requests_seconds_sum{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",}[$__range])) / sum(increase(http_server_requests_seconds_count{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",}[$__range]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -391,7 +391,7 @@
             "uid": "prometheusdatasource"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",le=\"+Inf\",}[24h])) / (sum(increase(http_server_requests_seconds_count{method=\"POST\",outcome=\"SUCCESS\",status=\"200\",uri=\"/realms/{realm}/login-actions/authenticate\",}[24h])) + sum(increase(http_server_requests_seconds_bucket{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",le=\"+Inf\",}[24h]))) or vector(1)",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",le=\"+Inf\",}[$__range])) / (sum(increase(http_server_requests_seconds_count{method=\"POST\",outcome=\"SUCCESS\",status=\"200\",uri=\"/realms/{realm}/login-actions/authenticate\",}[$__range])) + sum(increase(http_server_requests_seconds_bucket{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",le=\"+Inf\",}[$__range]))) or vector(1)",
           "instant": false,
           "legendFormat": "Percent successful",
           "range": true,
@@ -456,7 +456,7 @@
             "uid": "prometheusdatasource"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",le=\"+Inf\",}[24h]))",
+          "expr": "sum(increase(http_server_requests_seconds_bucket{method=\"POST\",outcome=\"REDIRECTION\",status=\"302\",uri=\"/realms/{realm}/login-actions/authenticate\",le=\"+Inf\",}[$__range]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -521,7 +521,7 @@
             "uid": "prometheusdatasource"
           },
           "editorMode": "code",
-          "expr": "sum(increase(http_server_requests_seconds_count{method=\"POST\",outcome=\"SUCCESS\",status=\"200\",uri=\"/realms/{realm}/login-actions/authenticate\",}[24h]))",
+          "expr": "sum(increase(http_server_requests_seconds_count{method=\"POST\",outcome=\"SUCCESS\",status=\"200\",uri=\"/realms/{realm}/login-actions/authenticate\",}[$__range])) or vector(0)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -539,13 +539,13 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Keycloak Metrics",
   "uid": "ce40g1yhb06ioc",
-  "version": 3,
+  "version": 1,
   "weekStart": ""
 }

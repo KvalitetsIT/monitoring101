@@ -92,6 +92,12 @@ A lot can be achieved simply by using the previously mentioned environment varia
 
 ## How do we visualize and interpret Keycloak metrics?
 
+Before diving in, one should note that the ```$__range``` variable is a global variable in Grafana which is automatically set to the timeframe our Grafana dashboard is showcasing. For example, if our dashboard is set to show data from the past 24 hours, the ```$__range``` variable will be set to 24h. Using the range variable instead of a hardcoded value like ```[24h]``` in our PromQL queries makes the visualizations adjust their data to match the timeframe selected by the user.
+
+For clarity's sake, the timeframe is selected by pressing this button in Grafana:
+
+![screenshot](images/keycloak_7.png)
+
 ### Using Time Series Graphs to visualize Login Times
 
 Let's build a Grafana dashboard using the Keycloak metrics just added to our endpoint. Our first goal is to visualize how quickly login tokens are created. We'll be creating the following visualization using Grafana:
@@ -101,12 +107,12 @@ Let's build a Grafana dashboard using the Keycloak metrics just added to our end
 In order to do this, we create a Grafana visualization with 4 separate queries. The first query is:
 
 ```
-sum(increase(http_server_requests_seconds_bucket{method="POST", outcome="REDIRECTION", uri="/realms/{realm}/login-actions/authenticate",le="0.05"}[24h])) 
+sum(increase(http_server_requests_seconds_bucket{method="POST", outcome="REDIRECTION", uri="/realms/{realm}/login-actions/authenticate",le="0.05"}[$__range])) 
 / 
-sum(increase(http_server_requests_seconds_bucket{method="POST", outcome="REDIRECTION", uri="/realms/{realm}/login-actions/authenticate", le="+Inf"}[24h]))
+sum(increase(http_server_requests_seconds_bucket{method="POST", outcome="REDIRECTION", uri="/realms/{realm}/login-actions/authenticate", le="+Inf"}[$__range]))
 ```
 
-This query first counts the increase in the number of successful login attempts which finished in 0.05 seconds during the past 24 hours. It then divides that number by the total increase in successful login attempts during the past 24 hours. This gives us the fraction of login attempts that finished in 0.05 seconds or less.
+This query first counts the increase in the number of successful login attempts which finished in 0.05 seconds during the timeframe Grafana is set to display. It then divides that number by the total increase in successful login attempts during that same timeframe. This gives us the fraction of login attempts that finished in 0.05 seconds or less.
 
 The 3 other queries do exactly the same, except for 0.10, 0.20 and 0.40 seconds respectively by replacing the ```le="0.05"``` part in the query above:
 
@@ -130,9 +136,7 @@ sum(increase(http_server_requests_seconds_sum{method="POST",outcome="REDIRECTION
 sum(increase(http_server_requests_seconds_count{method="POST",outcome="REDIRECTION",status="302",uri="/realms/{realm}/login-actions/authenticate",}[$__range]))
 ```
 
-The ```$__range``` variable is a global variable which is automatically set to the timeframe our Grafana dashboard is showcasing. For example, if our dashboard is set to show data from the past 24 hours, the ```$__range``` variable will be set to 24h and our Stat will display the average login time in the past 24 hours.
-
-This query first calculates the total duration it took to process succesful login attempts during the past 24 hours. It then divides that by the total number of successful login attempts in the past 24 hours. This gives us the average login time.
+This query first calculates the total duration it took to process succesful login attempts during the timeframe Grafana is set to display. It then divides that by the total number of successful login attempts in the same timeframe. This gives us the average login time.
 
 In order to customize our stat further, we do 3 additional things in the options section for our "Stat" visualization:
 
@@ -148,9 +152,7 @@ In order to customize our stat further, we do 3 additional things in the options
 
 ![screenshot](images/keycloak_4.png)
 
-**The number shown by "Show percentage change" represents how much something has changed over the time period displayed on the dashboard:** 
-
-![screenshot](images/keycloak_7.png)
+**The percentage shown by "Show percentage change" represents how much something has changed over the time period displayed on the dashboard.** For example, if our timeframe is set to 24 hours, the percentage shown by Grafana represents the change in our metric during those 24 hours.
 
 Final note: As discussed in previous chapters, an alternative approach to creating this kind of visualization is to create custom metrics in our recording_rules.yml file.
 
