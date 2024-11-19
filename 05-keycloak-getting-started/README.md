@@ -161,3 +161,21 @@ Final note: As discussed in previous chapters, an alternative approach to creati
 ### Additional Visualizations of Keycloak Data
 
 The "Keycloak Metrics" dashboard in Grafana contains the visualizations we've created in this chapter in addition to visualizations of several other relevant Keycloak metrics. These metrics include the number of users and the number of failed logins.
+
+If we want to add a text field displaying the timeframe of our dashboard, we do the following:
+
+1) Add a new visualization.
+
+2) Set the visualization type to "Text".
+
+3) Add the following HTML code to the content field of the visualization:
+
+```
+<div style="font-size: 30px; text-align: left;">
+  ${__from:date:YYYY-MM-DD HH:mm:ss} to <br /> ${__to:date:YYYY-MM-DD HH:mm:ss}
+</div>
+```
+
+Following these steps gives us the following visualization which automatically updates whenever we change the timeframe of the dashboard:
+
+![screenshot](images/keycloak_8.png)
