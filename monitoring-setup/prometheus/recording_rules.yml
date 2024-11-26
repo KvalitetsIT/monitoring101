@@ -28,3 +28,4 @@ groups:
       #Fraction of HTTP requests finished in 400ms or less
       - record: http_server_requests_fraction_finished_in:400ms
         expr: (sum(http_server_requests_seconds_bucket{le="0.4"}) by (method, uri)) / (sum(http_server_requests_seconds_bucket{le="+Inf"}) by (method, uri))
+
