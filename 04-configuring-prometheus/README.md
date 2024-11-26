@@ -104,6 +104,76 @@ global:
 
 Now our new metrics are available in Prometheus and Grafana. It is however important to note that these new metrics will not show up in the endpoints of our applications.
 
+### Removing Unneeded Default Metrics
+Sometimes the number of metrics can be overwhelming. In this section we'll be taking a look at how to disable some of them, using Java metrics as an example. The prometheus.yml file already contains a scrape configuration for our Java apps:
+
+```
+ - job_name: java-app
+   metrics_path: /actuator/prometheus
+   static_configs:
+    - targets:
+       - java-app-a:8081
+       - java-app-b:8081
+```
+
+Unfortunately, it is not possible to remove default metrics from our endpoints. We can however configure Prometheus to avoid scraping certain metrics using Regex by adding to our prometheus.yml file. The simplest way of doing this is by targeting specific metrics by name:
+
+```
+ - job_name: keycloak
+   metrics_path: /metrics
+   static_configs:
+    - targets:
+       - keycloak:9000
+   metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'vendor_statistics_evictions|vendor_statistics_time_since_reset'
+        action: drop
+```
+
+This prevents Prometheus from storing the vendor_statistics_evictions and vendor_statistics_time_since_reset metrics from Java applications. One could also write "proper" regex expressions like the following:
+
+```
+ - job_name: keycloak
+   metrics_path: /metrics
+   static_configs:
+    - targets:
+       - keycloak:9000
+   metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '^vendor.*'
+        action: drop
+``` 
+
+Which prevents Prometheus from scraping all metrics from our Java applications whose name starts with "vendor". One can also choose to remove metrics based off their labels. Here's an example where we prevent Prometheus from scraping all metrics where the "cache" label is set to "keys":
+
+```
+ - job_name: keycloak
+   metrics_path: /metrics
+   static_configs:
+    - targets:
+       - keycloak:9000
+   metric_relabel_configs:
+      - source_labels: [cache] #NOTE: __name__ is written with "__", but all labels should be written without "__"
+        regex: 'keys'
+        action: drop
+``` 
+
+Finally, it is possible to target metrics with a specific combination of labels. Here we target metrics where 'realm' is 'foo' *and* 'cache' is 'bar:
+
+```
+ - job_name: keycloak
+   metrics_path: /metrics
+   static_configs:
+    - targets:
+       - keycloak:9000
+   metric_relabel_configs:
+      - source_labels: [realm, cache]
+        regex: 'foo;bar' #Alternatively write regex: 'foo|bar' to target metrics where 'realm' is 'foo' *or* 'cache' is 'bar'.
+        action: drop
+```
+
+Be careful not to remove any metrics that might be needed. And always be sure to properly document the regex used.
+
 ## Configuring Micrometer to keep track of HTTP requests - Histograms
 Sometimes one is interested in monitoring metrics related to HTTP request processing time. In this section we'll take a look at how to implement a metric which tracks two things: 1) the percentage of HTTP requests that finish in less than 15ms and 2) the percentage of HTTP requests that finish in less than 400ms.
 
