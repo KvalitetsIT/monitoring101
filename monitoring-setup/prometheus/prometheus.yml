@@ -45,6 +45,9 @@ scrape_configs:
       - source_labels: [__name__]
         regex: '^vendor.*|^jvm.*|^worker.*|^netty.*|^agroal.*|^process.*|^base.*|^system.*' #do not add metrics from keycloak starting with vendor, jvm etc. to prometheus.
         action: drop
+      - source_labels: [uri]
+        regex: '.*roles$|.*console$' #do not add metrics from keycloak where the uri ends with roles or console
+        action: drop
 #Explanation of the regex:
 #"source_labels: [__name__]" tells prometheus to look at the names of metrics (as opposed to labels like "job").
 #"regex: '^vendor.*|^jvm.*|^worker.*|^netty.*|^agroal.*|^process.*|^base.*|^system.*'" tells prometheus to select names starting with vendor or jvm or worker or... etc.

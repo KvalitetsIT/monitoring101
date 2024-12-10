@@ -158,7 +158,7 @@ Which prevents Prometheus from scraping all metrics from our Java applications w
         action: drop
 ``` 
 
-Finally, it is possible to target metrics with a specific combination of labels. Here we target metrics where 'realm' is 'foo' *and* 'cache' is 'bar:
+Additionally, it is possible to target metrics with a specific combination of labels. Here we target metrics where 'realm' is 'foo' *and* 'cache' is 'bar:
 
 ```
  - job_name: keycloak
@@ -169,6 +169,23 @@ Finally, it is possible to target metrics with a specific combination of labels.
    metric_relabel_configs:
       - source_labels: [realm, cache]
         regex: 'foo;bar' #Alternatively write regex: 'foo|bar' to target metrics where 'realm' is 'foo' *or* 'cache' is 'bar'.
+        action: drop
+```
+
+Finally, one should note that it is possible to add multiple regex expressions. In this example we first add a policy telling Prometheus not to store metrics with a name that starts with e.g. vendor or jvm. Then we add a policy telling Prometheus not to store metrics with a uri field ending with "roles" or "console" (e.g. ```http_server_requests_seconds_bucket{instance="keycloak:9000", job="keycloak", le="+Inf", method="GET", outcome="SUCCESS", status="200", uri="/admin/realms/{realm}/roles"}```):
+
+```
+ - job_name: keycloak
+   metrics_path: /metrics
+   static_configs:
+    - targets:
+       - keycloak:9000
+   metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '^vendor.*|^jvm.*|^worker.*|^netty.*|^agroal.*|^process.*|^base.*|^system.*' #do not add metrics from keycloak starting with vendor, jvm etc. to prometheus.
+        action: drop
+      - source_labels: [uri]
+        regex: '.*roles$|.*console$' #do not add metrics from keycloak where the uri ends with roles or console
         action: drop
 ```
 
