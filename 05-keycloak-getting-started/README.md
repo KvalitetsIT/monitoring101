@@ -179,3 +179,34 @@ If we want to add a text field displaying the timeframe of our dashboard, we do 
 Following these steps gives us the following visualization which automatically updates whenever we change the timeframe of the dashboard:
 
 ![screenshot](images/keycloak_8.png)
+
+## Histograms and similar visualization techniques 
+
+In this section we'll be taking a look at how to create histograms and similar types of visualizations in Grafana. Unfortunately, the way Keycloak metrics are formatted and stored makes it difficult to visualize them as histograms. We'll be taking a look at one approach to create *cumulative histogram* here:
+
+![screenshot](images/keycloak_9.png)
+
+The visualization above shows the percentage of login attempts that finished in 0.05 seconds or less, followed by the percentage of login attempts that finished in 0.10 seconds or less, etc. The good thing about the visualization is that it gives a visual overview of the distribution of login times, while simultaneously providing the most relevant numbers.
+
+The visualization is called a *cumulative histogram*. In an ordinary histogram, the second bar would show the fraction of login attempts finished in 0.05-0.10 seconds. In a cumulative histogram, it instead shows the fraction of login attempts finished in 0.00-0.10 seconds. Here's a brief overview of the difference between the two types of histograms:
+
+![screenshot](cumulative_vs_normal_histogram.png)
+
+### Creating a cumulative histogram
+
+To create a cumulative histogram, we'll be using a bar gauge as the visualization type in Grafana. A bar chart is possible as well, if one is not interested in displaying the numbers on top of the visualization. The PromQL code we'll be using is the following:
+
+```
+sum(
+  increase(http_server_requests_seconds_bucket{method="POST", outcome="REDIRECTION", uri="/realms/{realm}/login-actions/authenticate", le=~"0.05|0.1|0.2|0.4"}[$__range])
+) by (le)
+/
+on() group_left
+sum(
+  increase(http_server_requests_seconds_bucket{method="POST", outcome="REDIRECTION", uri="/realms/{realm}/login-actions/authenticate", le="+Inf"}[$__range])
+) 
+```
+
+This measures the increase in each bucket over the period our dashboard is set to visualize, and divides that by the total increase in login attempts. The ```on() group_left``` part of the code tells Grafana that we want each bucket to be divided by the same number.
+
+Note that this code creates a cumulative histogram because our underlying data is cumulative. If our data was not cumulative, this would have created an ordinary histogram instead.
