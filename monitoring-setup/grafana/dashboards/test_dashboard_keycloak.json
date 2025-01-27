@@ -450,6 +450,8 @@
           },
           "decimals": 1,
           "mappings": [],
+          "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -708,20 +710,19 @@
       "type": "stat"
     }
   ],
-  "refresh": "",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Keycloak Metrics",
   "uid": "ce40g1yhb06ioc",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
