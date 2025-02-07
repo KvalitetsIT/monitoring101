@@ -1,5 +1,6 @@
 global:
   scrape_interval: 10s
+  evaluation_interval: 15s #how often to calculate metrics defined in recording_rules.yml
 scrape_configs:
  - job_name: prometheus
    static_configs:
@@ -18,6 +19,10 @@ scrape_configs:
     - targets:
        - java-app-a:8081
        - java-app-b:8081
+   metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'vendor_statistics_evictions'
+        action: drop
 
  - job_name: nginx
    metrics_path: /metrics
@@ -30,4 +35,25 @@ scrape_configs:
    static_configs:
     - targets:
        - dotnet-app:8081
-
+       
+ - job_name: keycloak
+   metrics_path: /metrics
+   static_configs:
+    - targets:
+       - keycloak:9000
+   metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '^vendor.*|^jvm.*|^worker.*|^netty.*|^agroal.*|^process.*|^base.*|^system.*' #do not add metrics from keycloak starting with vendor, jvm etc. to prometheus.
+        action: drop
+      - source_labels: [uri]
+        regex: '.*roles$|.*console$' #do not add metrics from keycloak where the uri ends with roles or console
+        action: drop
+#Explanation of the regex:
+#"source_labels: [__name__]" tells prometheus to look at the names of metrics (as opposed to labels like "job").
+#"regex: '^vendor.*|^jvm.*|^worker.*|^netty.*|^agroal.*|^process.*|^base.*|^system.*'" tells prometheus to select names starting with vendor or jvm or worker or... etc.
+#"action: drop" tells prometheus to drop all of the metrics we selected in the line above
+       
+rule_files:
+  - /opt/bitnami/prometheus/conf/recording_rules.yml #location of file that specifies which default metrics should be configured
+ 
+ 

@@ -48,6 +48,8 @@ services:
       - JDBC_USER=dbuser
       - JDBC_PASS=1234
       - management_metrics_web_server_request_autotime_percentiles=0.95
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true #required to make Flyway work in the Java applications
+      - management_metrics_distribution_slo_http_server_requests=15ms,400ms
   java-app-b:
     image: kvalitetsit/kithugs:dev
     healthcheck:
@@ -67,16 +69,23 @@ services:
       - JDBC_USER=dbuser
       - JDBC_PASS=1234
       - management_metrics_web_server_request_autotime_percentiles=0.95
-#  dotnet-app:
-#    image: kvalitetsit/kitnugs:dev
-#    networks:
-#      - monitoring101
-#    ports:
-#      - 8090:8080
-#      - 8091:8081
-#    environment:
-#      - "ConnectionStrings__db=server=mariadb;user=dbuser;password=1234;database=hellodb"
-#      - TEST_VAR=monitoring101
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true #required to make Flyway work in the Java applications
+  dotnet-app:
+#NOTE: Kitnugs has a main branch, which only supports MySQL/MariaDB, and a postgresql branch, which only supports Postgresql.
+#If we set the image to be kvalitetsit/kitnugs:dev, our application simply pulls whichever of the two branches was most recently updated, which is an issue when that happens to be the Postgresql branch.
+#For this reason we pull a specific commit from the main branch. 
+    image: kvalitetsit/kitnugs:1d3829c90cc422195f5f36076d9295f079de5cf3 
+    networks:
+      - monitoring101
+    ports:
+      - 8090:8080
+      - 8091:8081
+    depends_on:
+      mariadb:
+         condition: service_healthy
+    environment:
+      - "ConnectionStrings__db=Server=mariadb;UID=dbuser;PWD=1234;Database=hellodb"
+      - TEST_VAR=monitoring101
   mariadb:
     image: mariadb:10.6
     healthcheck:
@@ -91,6 +100,29 @@ services:
       - MARIADB_PASSWORD=1234
     networks:
       - monitoring101
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    command: >
+        start --hostname-strict=false --http-port=8080 --http-enabled=true --https-port=-1
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=kit
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=Test1234
+      - KEYCLOAK_LOGLEVEL=DEBUG
+      - DB_VENDOR=h2
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
+      - KC_HTTP_METRICS_SLOS=50,100,200,400 #sets bucket sizes for HTTP related metrics
+    networks:
+      - monitoring101
+    depends_on:
+      java-app-a:
+         condition: service_healthy
+      java-app-b:
+         condition: service_healthy
+    ports:
+      - "8092:8080" #keycloak is accessed at localhost:8092
+      - "9000:9000" #but keycloak's metrics endpoint is localhost:9000/metrics
+
 networks:
   # To create this run: docker network create monitoring101
   monitoring101:

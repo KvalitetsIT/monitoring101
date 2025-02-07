@@ -1,0 +1,31 @@
+groups:
+  - name: http_requests_grouped
+    rules:
+      #Group all 1xx status codes
+      - record: promhttp_metric_handler_requests_total:1xx #name of the new metric
+        expr: sum(promhttp_metric_handler_requests_total{code=~"1.."}) by (job) or vector(0) #promQL code for calculating the metric
+    
+      #Group all 2xx status codes
+      - record: promhttp_metric_handler_requests_total:2xx
+        expr: sum(promhttp_metric_handler_requests_total{code=~"2.."}) by (job) or vector(0)
+
+      #Group all 3xx status codes
+      - record: promhttp_metric_handler_requests_total:3xx
+        expr: sum(promhttp_metric_handler_requests_total{code=~"3.."}) by (job) or vector(0)
+
+      #Group all 4xx status codes
+      - record: promhttp_metric_handler_requests_total:4xx
+        expr: sum(promhttp_metric_handler_requests_total{code=~"4.."}) by (job) or vector(0)
+
+      #Group all 5xx status codes
+      - record: promhttp_metric_handler_requests_total:5xx
+        expr: sum(promhttp_metric_handler_requests_total{code=~"5.."}) by (job) or vector(0)
+
+      #Fraction of HTTP requests finished in 15ms or less
+      - record: http_server_requests_fraction_finished_in:15ms
+        expr: (sum(http_server_requests_seconds_bucket{le="0.015"}) by (method, uri)) / (sum(http_server_requests_seconds_bucket{le="+Inf"}) by (method, uri))
+
+      #Fraction of HTTP requests finished in 400ms or less
+      - record: http_server_requests_fraction_finished_in:400ms
+        expr: (sum(http_server_requests_seconds_bucket{le="0.4"}) by (method, uri)) / (sum(http_server_requests_seconds_bucket{le="+Inf"}) by (method, uri))
+
